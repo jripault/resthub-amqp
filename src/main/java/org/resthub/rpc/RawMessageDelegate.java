@@ -25,16 +25,11 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.resthub.rpc.serializer.SerializationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-
-import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.HessianFactory;
-import com.caucho.hessian.io.HessianInputFactory;
-import com.caucho.hessian.io.SerializerFactory;
-import com.caucho.hessian.server.HessianSkeleton;
 
 /**
  * Requests processing
@@ -49,16 +44,16 @@ public class RawMessageDelegate {
     
     private Class<?> serviceAPI;
     private Object serviceImpl;
-    private SerializerFactory serializerFactory;
+    private SerializationHandler serializationHandler;
     
     public RawMessageDelegate(){
         
     }
     
-    public RawMessageDelegate(Class<?> serviceAPI, Object serviceImpl, SerializerFactory serializerFactory){
+    public RawMessageDelegate(Class<?> serviceAPI, Object serviceImpl, SerializationHandler serializationHandler){
         this.serviceAPI = serviceAPI;
         this.serviceImpl = serviceImpl;
-        this.serializerFactory = serializerFactory;
+        this.serializationHandler = serializationHandler;
     }
     
     /**
@@ -76,27 +71,6 @@ public class RawMessageDelegate {
     {
         this.serviceImpl = serviceImpl;
         
-    }
-
-    /**
-     * Sets the serializer factory.
-     */
-    public void setSerializerFactory(SerializerFactory factory)
-    {
-        serializerFactory = factory;
-    }
-
-    /**
-     * Gets the serializer factory.
-     */
-    public SerializerFactory getSerializerFactory()
-    {
-        if (serializerFactory == null)
-        {
-            serializerFactory = new SerializerFactory();
-        }
-
-        return serializerFactory;
     }
     
     /**
@@ -138,7 +112,7 @@ public class RawMessageDelegate {
     /**
      * Execute a request.
      */
-    private byte[] createResponseBody(byte[] request, boolean compressed) throws Exception
+    private byte[] createResponseBody(byte[] request, boolean compressed) throws Throwable
     {
         InputStream in = new ByteArrayInputStream(request);
         if (compressed)
@@ -157,10 +131,12 @@ public class RawMessageDelegate {
         {
             out = bout;
         }
-        
-        HessianSkeleton skeleton = new HessianSkeleton(serviceImpl, serviceAPI);
-        skeleton.invoke(in, out, getSerializerFactory());
-        
+
+        serializationHandler.createResponse(serviceImpl, serviceAPI, in, out);
+        /*
+            HessianSkeleton skeleton = new HessianSkeleton(serviceImpl, serviceAPI);
+            skeleton.invoke(in, out, getSerializerFactory());
+        */
         if (out instanceof DeflaterOutputStream)
         {
             ((DeflaterOutputStream) out).finish();
@@ -178,11 +154,14 @@ public class RawMessageDelegate {
             ByteArrayInputStream is = new ByteArrayInputStream(request);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
 
+            serializationHandler.handleError(cause, os);
+
+            /*
             AbstractHessianOutput out = createHessianOutput(new HessianInputFactory().readHeader(is), os);
 
             out.writeFault(cause.getClass().getSimpleName(), cause.getMessage(), cause);
             out.close();
-
+            */
             return os.toByteArray();
         }
         catch (IOException e)
@@ -191,6 +170,7 @@ public class RawMessageDelegate {
         }
     }
 
+    /*
     private AbstractHessianOutput createHessianOutput(HessianInputFactory.HeaderType header, OutputStream os)
     {
         AbstractHessianOutput out;
@@ -213,5 +193,6 @@ public class RawMessageDelegate {
         
         return out;
     }
+    */
 
 }

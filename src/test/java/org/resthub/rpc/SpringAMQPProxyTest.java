@@ -32,7 +32,7 @@ import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
 @ContextConfiguration(locations = {"classpath:applicationContext-server.xml", "classpath:applicationContext-client.xml"})
-public class SpringAMQPHessianProxyTest extends AbstractTestNGSpringContextTests
+public class SpringAMQPProxyTest extends AbstractTestNGSpringContextTests
 {
     protected final String HOSTNAME = "localhost";
     

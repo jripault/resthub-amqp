@@ -17,16 +17,15 @@
 
 package org.resthub.rpc.service;
 
-import org.resthub.rpc.HessianEndpoint;
-
+import org.resthub.rpc.Endpoint;
 
 
 /**
- * Echo service implementation as a subclass of HessianEndpoint.
+ * Echo service implementation as a subclass of Endpoint.
  * 
  * @author Emmanuel Bourg
  */
-public class EchoServiceEndpoint extends HessianEndpoint implements EchoService
+public class EchoServiceEndpoint extends Endpoint implements EchoService
 {
     public String echo(String message)
     {

@@ -20,7 +20,7 @@
 	<bean id="hibernateSerializerFactory" class="org.resthub.rpc.serializer.HibernateSerializerFactory" />
 		
 	<bean id="personServiceEndpoint" 
-	   		class="org.resthub.rpc.HessianEndpoint">
+	   		class="org.resthub.rpc.Endpoint">
 	   <constructor-arg index="0" ref="personService"/>
 	   <property name="connectionFactory" ref="connectionFactory" />
 	   <property name="serializerFactory" ref="hibernateSerializerFactory" />

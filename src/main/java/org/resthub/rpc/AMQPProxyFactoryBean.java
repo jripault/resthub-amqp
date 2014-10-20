@@ -17,16 +17,18 @@ package org.resthub.rpc;
 
 import java.lang.reflect.Proxy;
 
+import org.resthub.rpc.serializer.DefaultSerializationHandler;
+import org.resthub.rpc.serializer.SerializationHandler;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
- * FactoryBean for Sprimg AMQP Hessian proxies. Exposes the proxied service
+ * FactoryBean for Spring AMQP  proxies. Exposes the proxied service
  * for use as a bean reference using the specified service interface.
  * 
  * @author Antoine Neveu
  *
  */
-public class AMQPHessianProxyFactoryBean extends AMQPHessianProxyFactory
+public class AMQPProxyFactoryBean extends AMQPProxyFactory
     implements FactoryBean<Object> {
     
     private Object serviceProxy;
@@ -34,10 +36,14 @@ public class AMQPHessianProxyFactoryBean extends AMQPHessianProxyFactory
     @Override
     public void afterPropertiesSet(){
         super.afterPropertiesSet();
+
         if (null == this.serviceInterface || ! this.serviceInterface.isInterface()){
             throw new IllegalArgumentException("Property 'serviceInterface' is required");
         }
-        AMQPHessianProxy handler = new AMQPHessianProxy(this);
+        if(null == this.serializationHandler){
+            this.serializationHandler = new DefaultSerializationHandler();
+        }
+        AMQPProxy handler = new AMQPProxy(this);
         this.serviceProxy =  Proxy.newProxyInstance(
                 this.serviceInterface.getClassLoader(), new Class[]{this.serviceInterface}, handler);
     }

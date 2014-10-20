@@ -24,7 +24,7 @@ public class EchoServer {
 //        connectionFactory.setUsername("guest");
 //        connectionFactory.setPassword("guest");
 //
-//        HessianEndpoint endpoint = new HessianEndpoint(new EchoServiceImpl());
+//        Endpoint endpoint = new Endpoint(new EchoServiceImpl());
 //        endpoint.setConnectionFactory(connectionFactory);
 //        endpoint.run();
 //        

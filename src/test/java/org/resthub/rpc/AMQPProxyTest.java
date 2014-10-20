@@ -23,6 +23,7 @@ import static org.testng.AssertJUnit.fail;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.concurrent.TimeoutException;
 
+import org.resthub.rpc.serializer.DefaultSerializationHandler;
 import org.resthub.rpc.service.EchoService;
 import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.FailingService;
@@ -33,11 +34,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 
-public class AMQPHessianProxyTest
+public class AMQPProxyTest
 {
     protected final String HOSTNAME = "localhost";
 
     protected CachingConnectionFactory connectionFactory;
+
+    private DefaultSerializationHandler serializationHandler = new DefaultSerializationHandler();
 
     @BeforeClass
     protected void setUp() throws Exception
@@ -56,13 +59,17 @@ public class AMQPHessianProxyTest
     @Test
     public void testEcho() throws Exception
     {
+
+
         EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
+        endpoint.setSerializationHandler(serializationHandler);
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.run();
         
-        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(5000);
         factory.setConnectionFactory(connectionFactory);
+        factory.setSerializationHandler(serializationHandler);
         EchoService service = factory.create(EchoService.class);
         String message = "Hello Hessian!";
 
@@ -77,12 +84,14 @@ public class AMQPHessianProxyTest
     {
         EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
+        endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
         
-        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(5000);
         factory.setCompressed(true);
         factory.setConnectionFactory(connectionFactory);
+        factory.setSerializationHandler(new DefaultSerializationHandler());
         EchoService service = factory.create(EchoService.class);
         String message = "Hello Hessian!";
 
@@ -109,11 +118,13 @@ public class AMQPHessianProxyTest
     {
         FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
+        endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
         
-        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(3000);
         factory.setConnectionFactory(connectionFactory);
+        factory.setSerializationHandler(new DefaultSerializationHandler());
         FailingService service = factory.create(FailingService.class);
         
         try
@@ -137,11 +148,13 @@ public class AMQPHessianProxyTest
     {
         FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
+        endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
         
-        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(5000);
         factory.setConnectionFactory(connectionFactory);
+        factory.setSerializationHandler(new DefaultSerializationHandler());
         FailingService service = factory.create(FailingService.class);
         
         try
@@ -163,11 +176,13 @@ public class AMQPHessianProxyTest
     {
         EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
+        endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
         
-        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(5000);
         factory.setConnectionFactory(connectionFactory);
+        factory.setSerializationHandler(new DefaultSerializationHandler());
         EchoService service = factory.create(EchoService.class);
         
         try
@@ -188,11 +203,13 @@ public class AMQPHessianProxyTest
     {
         FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
+        endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
 
-        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(3000);
         factory.setConnectionFactory(connectionFactory);
+        factory.setSerializationHandler(new DefaultSerializationHandler());
         FailingService service = factory.create(FailingService.class);
 
         try

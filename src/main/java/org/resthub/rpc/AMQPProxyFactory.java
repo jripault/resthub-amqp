@@ -16,18 +16,8 @@
  */
 package org.resthub.rpc;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.lang.reflect.Proxy;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.resthub.rpc.serializer.SerializationHandler;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionListener;
@@ -37,15 +27,9 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.caucho.hessian.io.AbstractHessianInput;
-import com.caucho.hessian.io.AbstractHessianOutput;
-import com.caucho.hessian.io.Hessian2Input;
-import com.caucho.hessian.io.Hessian2Output;
-import com.caucho.hessian.io.HessianDebugInputStream;
-import com.caucho.hessian.io.HessianInput;
-import com.caucho.hessian.io.HessianOutput;
-import com.caucho.hessian.io.HessianRemoteResolver;
-import com.caucho.hessian.io.SerializerFactory;
+import java.lang.reflect.Proxy;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Factory for creating Hessian client stubs. The returned stub will
@@ -54,17 +38,15 @@ import com.caucho.hessian.io.SerializerFactory;
  * After creation, the stub can be like a regular Java class. Because
  * it makes remote calls, it can throw more exceptions than a Java class.
  * In particular, it may throw protocol exceptions.
- * 
- * This class is derived from {@link com.caucho.hessian.client.HessianProxyFactory}. 
+ *
  * 
  * @author Emmanuel Bourg
  * @author Scott Ferguson
  * @author Antoine Neveu
  */
-public class AMQPHessianProxyFactory implements InitializingBean, DisposableBean
+public class AMQPProxyFactory implements InitializingBean, DisposableBean
 {
-    private SerializerFactory _serializerFactory;
-    private HessianRemoteResolver _resolver;
+
     private ConnectionFactory connectionFactory;
     private RabbitTemplate template;
     private AmqpAdmin admin;
@@ -78,19 +60,18 @@ public class AMQPHessianProxyFactory implements InitializingBean, DisposableBean
 
     private boolean isOverloadEnabled = false;
 
-    private boolean isHessian2Reply = true;
-    private boolean isHessian2Request = true;
-
     private boolean debug = false;
 
     private long readTimeout = -1;
     
     private boolean compressed;
 
+    protected SerializationHandler serializationHandler;
+
     /**
      * Creates the new proxy factory.
      */
-    public AMQPHessianProxyFactory()
+    public AMQPProxyFactory()
     {
         
     }
@@ -176,56 +157,6 @@ public class AMQPHessianProxyFactory implements InitializingBean, DisposableBean
     }
 
     /**
-     * True if the proxy can read Hessian 2 responses.
-     */
-    public void setHessian2Reply(boolean isHessian2)
-    {
-        isHessian2Reply = isHessian2;
-    }
-
-    /**
-     * True if the proxy should send Hessian 2 requests.
-     */
-    public void setHessian2Request(boolean isHessian2)
-    {
-        isHessian2Request = isHessian2;
-
-        if (isHessian2)
-        {
-            isHessian2Reply = true;
-        }
-    }
-
-    /**
-     * Returns the remote resolver.
-     */
-    public HessianRemoteResolver getRemoteResolver()
-    {
-        return _resolver;
-    }
-
-    /**
-     * Sets the serializer factory.
-     */
-    public void setSerializerFactory(SerializerFactory factory)
-    {
-        _serializerFactory = factory;
-    }
-
-    /**
-     * Gets the serializer factory.
-     */
-    public SerializerFactory getSerializerFactory()
-    {
-        if (_serializerFactory == null)
-        {
-            _serializerFactory = new SerializerFactory();
-        }
-
-        return _serializerFactory;
-    }
-    
-    /**
      * Get the connectionFactory
      * @return
      */
@@ -268,7 +199,15 @@ public class AMQPHessianProxyFactory implements InitializingBean, DisposableBean
         }
         this.serviceInterface = serviceInterface;
     }
-    
+
+    public SerializationHandler getSerializationHandler() {
+        return serializationHandler;
+    }
+
+    public void setSerializationHandler(SerializationHandler serializationHandler) {
+        this.serializationHandler = serializationHandler;
+    }
+
     /**
      * Creates a new proxy from the specified interface.
      * @param api the interface
@@ -281,79 +220,13 @@ public class AMQPHessianProxyFactory implements InitializingBean, DisposableBean
         }
         this.serviceInterface = api;
         this.afterPropertiesSet();
-        AMQPHessianProxy handler = new AMQPHessianProxy(this);
+        AMQPProxy handler = new AMQPProxy(this);
         return (T) Proxy.newProxyInstance(api.getClassLoader(), new Class[]{api}, handler);
     }
-    
-    AbstractHessianInput getHessianInput(InputStream is)
-    {
-        return getHessian2Input(is);
-    }
 
-    AbstractHessianInput getHessian1Input(InputStream is)
-    {
-        AbstractHessianInput in;
-
-        if (debug)
-        {
-            is = new HessianDebugInputStream(is, new PrintWriter(System.out));
-        }
-
-        in = new HessianInput(is);
-
-        in.setRemoteResolver(getRemoteResolver());
-
-        in.setSerializerFactory(getSerializerFactory());
-
-        return in;
-    }
-
-    AbstractHessianInput getHessian2Input(InputStream is)
-    {
-        AbstractHessianInput in;
-
-        if (debug)
-        {
-            is = new HessianDebugInputStream(is, new PrintWriter(System.out));
-        }
-
-        in = new Hessian2Input(is);
-
-        in.setRemoteResolver(getRemoteResolver());
-
-        in.setSerializerFactory(getSerializerFactory());
-
-        return in;
-    }
-
-    AbstractHessianOutput getHessianOutput(OutputStream os)
-    {
-        AbstractHessianOutput out;
-
-        if (isHessian2Request)
-        {
-            out = new Hessian2Output(os);
-        }
-        else
-        {
-            HessianOutput out1 = new HessianOutput(os);
-            out = out1;
-
-            if (isHessian2Reply)
-            {
-                out1.setVersion(2);
-            }
-        }
-
-        out.setSerializerFactory(getSerializerFactory());
-
-        return out;
-    }
-    
     /**
      * Create a queue and an exchange for requests
-     * 
-     * @param connectionFactory
+     *
      * @param queueName    the name of the queue
      * @param exchangeName    the name of the exchange
      */
@@ -369,8 +242,7 @@ public class AMQPHessianProxyFactory implements InitializingBean, DisposableBean
     
     /**
      * Create a queue for response
-     * 
-     * @param connectionFactory
+     *
      * @param queueName    the name of the queue
      */
     private Queue createReplyQueue(AmqpAdmin admin, String queueName)

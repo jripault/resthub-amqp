@@ -25,7 +25,7 @@ public class EchoClient {
 //        connectionFactory.setUsername("guest");
 //        connectionFactory.setPassword("guest");
 //        
-//        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+//        AMQPProxyFactory factory = new AMQPProxyFactory();
 //        factory.setConnectionFactory(connectionFactory);
 //        factory.setReadTimeout(3000);
 //        EchoService service = factory.create(EchoService.class);

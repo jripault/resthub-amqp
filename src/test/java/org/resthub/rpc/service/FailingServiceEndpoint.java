@@ -16,7 +16,7 @@
 
 package org.resthub.rpc.service;
 
-import org.resthub.rpc.HessianEndpoint;
+import org.resthub.rpc.Endpoint;
 
 
 
@@ -24,7 +24,7 @@ import org.resthub.rpc.HessianEndpoint;
  * @author Emmanuel Bourg
  * @version $Revision$, $Date$
  */
-public class FailingServiceEndpoint extends HessianEndpoint implements FailingService
+public class FailingServiceEndpoint extends Endpoint implements FailingService
 {
     public void timeout(long time)
     {

@@ -16,6 +16,8 @@
  */
 package org.resthub.rpc;
 
+import org.resthub.rpc.serializer.DefaultSerializationHandler;
+import org.resthub.rpc.serializer.SerializationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -30,26 +32,22 @@ import org.springframework.aop.SpringProxy;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.caucho.hessian.io.SerializerFactory;
 
 /**
  * Endpoint for serving Hessian services.
- * 
- * This class is derived from {@link com.caucho.hessian.server.HessianServlet}. 
- * 
- * @author Emmanuel Bourg
- * @author Antoine Neveu
+ *
  */
-public class HessianEndpoint implements InitializingBean, DisposableBean
+public class Endpoint implements InitializingBean, DisposableBean
 {
-    private static final Logger logger = LoggerFactory.getLogger(HessianEndpoint.class);
+    private static final Logger logger = LoggerFactory.getLogger(Endpoint.class);
     
     private Class<?> serviceAPI;
     private Object serviceImpl;
-    private SerializerFactory serializerFactory;
     private ConnectionFactory connectionFactory;
     private SimpleMessageListenerContainer listenerContainer;
     private AmqpAdmin admin;
+
+    private SerializationHandler serializationHandler;
     
     private int concurentConsumers;
 
@@ -59,7 +57,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     /**
      * Creates an hessian endpoint.
      */
-    public HessianEndpoint()
+    public Endpoint()
     {
         // Initialize the service
         setServiceAPI(findRemoteAPI(getClass()));
@@ -71,7 +69,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
      * 
      * @param serviceImpl The remote object to be exposed by the endpoint
      */
-    public HessianEndpoint(Object serviceImpl)
+    public Endpoint(Object serviceImpl)
     {
         // Initialize the service
         setServiceAPI(findRemoteAPI(serviceImpl.getClass()));
@@ -93,27 +91,6 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     {
         this.serviceImpl = serviceImpl;
         
-    }
-
-    /**
-     * Sets the serializer factory.
-     */
-    public void setSerializerFactory(SerializerFactory factory)
-    {
-        serializerFactory = factory;
-    }
-
-    /**
-     * Gets the serializer factory.
-     */
-    public SerializerFactory getSerializerFactory()
-    {
-        if (serializerFactory == null)
-        {
-            serializerFactory = new SerializerFactory();
-        }
-
-        return serializerFactory;
     }
 
     /**
@@ -164,12 +141,12 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         this.concurentConsumers = concurentConsumers;
     }
 
-    /**
-     * Sets the serializer send collection java type.
-     */
-    public void setSendCollectionType(boolean sendType)
-    {
-        getSerializerFactory().setSendCollectionType(sendType);
+    public SerializationHandler getSerializationHandler() {
+        return serializationHandler;
+    }
+
+    public void setSerializationHandler(SerializationHandler serializationHandler) {
+        this.serializationHandler = serializationHandler;
     }
 
     private Class<?> findRemoteAPI(Class<?> implClass)
@@ -241,7 +218,7 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
         this.createQueue(admin, getRequestQueueName(serviceAPI));
         
         MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(
-                new RawMessageDelegate(serviceAPI, serviceImpl, serializerFactory));
+                new RawMessageDelegate(serviceAPI, serviceImpl, serializationHandler));
         listenerAdapter.setMessageConverter(null);
         listenerAdapter.setMandatoryPublish(false);
         
@@ -258,6 +235,9 @@ public class HessianEndpoint implements InitializingBean, DisposableBean
     public void afterPropertiesSet() throws Exception {
         if (this.connectionFactory == null){
             throw new IllegalArgumentException("Property 'connectionFactory' is required");
+        }
+        if(this.serializationHandler == null){
+            this.serializationHandler = new DefaultSerializationHandler();
         }
         this.run();
     }

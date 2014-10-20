@@ -24,7 +24,7 @@ import org.resthub.rpc.service.EchoService;
 import org.testng.annotations.Test;
 
 
-public class SpringHessianEndpointTest extends SpringAMQPHessianProxyTest
+public class SpringEndpointTest extends SpringAMQPProxyTest
 {
     @Resource(name="echoServiceTest")
     protected EchoService echoServicePrefix;

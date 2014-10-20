@@ -18,28 +18,30 @@ package org.resthub.rpc;
 
 import static org.testng.AssertJUnit.assertEquals;
 
+import org.resthub.rpc.serializer.DefaultSerializationHandler;
 import org.resthub.rpc.service.EchoService;
 import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.EchoServiceImpl;
 import org.testng.annotations.Test;
 
 
-public class HessianEndpointTest extends AMQPHessianProxyTest
+public class EndpointTest extends AMQPProxyTest
 {
     protected void startEndpoint()
     {
-        HessianEndpoint endpoint = new HessianEndpoint(new EchoServiceImpl());
+        Endpoint endpoint = new Endpoint(new EchoServiceImpl());
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.run();
     }
 
     private void startEndpointWithPrefix()
     {
-        HessianEndpoint endpoint = new HessianEndpoint();
+        Endpoint endpoint = new Endpoint();
         endpoint.setServiceAPI(EchoService.class);
         endpoint.setServiceImpl(new EchoServiceEndpoint());
         endpoint.setQueuePrefix("foo");
         endpoint.setConnectionFactory(connectionFactory);
+        endpoint.setSerializationHandler(new DefaultSerializationHandler());
         endpoint.run();
     }
     
@@ -48,7 +50,8 @@ public class HessianEndpointTest extends AMQPHessianProxyTest
     {
         startEndpointWithPrefix();
         
-        AMQPHessianProxyFactory factory = new AMQPHessianProxyFactory();
+        AMQPProxyFactory factory = new AMQPProxyFactory();
+        factory.setSerializationHandler(new DefaultSerializationHandler());
         factory.setReadTimeout(5000);
         factory.setQueuePrefix("foo");
         factory.setConnectionFactory(connectionFactory);
