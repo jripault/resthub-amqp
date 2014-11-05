@@ -1,9 +1,6 @@
 package org.resthub.rpc.serializer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -24,9 +21,10 @@ public interface SerializationHandler {
     /**
      * Endpoint side : Handle error during invocation
      * @param cause error thrown during invocation
+     * @param is
      * @param os outputStream to write in
      */
-    void handleError(Throwable cause, ByteArrayOutputStream os) throws IOException;
+    void handleError(Throwable cause, ByteArrayInputStream is, ByteArrayOutputStream os) throws IOException;
 
     /**
      * Client side : Read method's response

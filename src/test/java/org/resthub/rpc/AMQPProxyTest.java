@@ -16,13 +16,6 @@
  */
 package org.resthub.rpc;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
-import static org.testng.AssertJUnit.fail;
-
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.concurrent.TimeoutException;
-
 import org.resthub.rpc.serializer.DefaultSerializationHandler;
 import org.resthub.rpc.service.EchoService;
 import org.resthub.rpc.service.EchoServiceEndpoint;
@@ -32,6 +25,11 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.concurrent.TimeoutException;
+
+import static org.testng.AssertJUnit.*;
 
 
 public class AMQPProxyTest
@@ -219,7 +217,7 @@ public class AMQPProxyTest
         }
         catch (StackOverflowError e)
         {
-           Thread.sleep(3000);
+           //Thread.sleep(3000);
         }
         finally {
             endpoint.destroy();

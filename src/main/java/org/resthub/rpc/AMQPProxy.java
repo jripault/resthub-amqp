@@ -16,7 +16,6 @@
  */
 package org.resthub.rpc;
 
-import org.resthub.rpc.serializer.SerializationHandler;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -94,41 +93,7 @@ public class AMQPProxy implements InvocationHandler {
             is = new InflaterInputStream(is, new Inflater(true));
         }
 
-
-
         return _factory.getSerializationHandler().readObject(method.getReturnType(), is);
-            /*
-            int code = is.read();
-            AbstractHessianInput in;
-            if (code == 'H')
-            {
-                int major = is.read();
-                int minor = is.read();
-
-                in = _factory.getHessian2Input(is);
-
-                return in.readReply(method.getReturnType());
-            }
-            else if (code == 'r')
-            {
-                int major = is.read();
-                int minor = is.read();
-
-                in = _factory.getHessianInput(is);
-
-                in.startReplyBody();
-
-                Object value = in.readObject(method.getReturnType());
-
-                in.completeReply();
-
-                return value;
-            }
-            else
-            {
-                throw new HessianProtocolException("'" + (char) code + "' is an unknown code");
-            }
-            */
     }
 
     /**
@@ -179,18 +144,6 @@ public class AMQPProxy implements InvocationHandler {
         }
 
         _factory.getSerializationHandler().writeMethodCall(method, args, os);
-        /*
-        if (_factory.isOverloadEnabled() && args != null && args.length > 0) {
-            methodName = AbstractSkeleton.mangleName(method, false);
-        }
-        AbstractHessianOutput out = _factory.getHessianOutput(os);
-
-        out.call(methodName, args);
-        if (os instanceof DeflaterOutputStream) {
-            ((DeflaterOutputStream) os).finish();
-        }
-        out.flush();
-        */
 
         return payload.toByteArray();
     }

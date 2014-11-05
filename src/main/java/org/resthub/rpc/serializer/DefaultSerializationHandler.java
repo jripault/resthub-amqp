@@ -30,7 +30,7 @@ public class DefaultSerializationHandler implements SerializationHandler {
     }
 
     @Override
-    public void handleError(Throwable cause, ByteArrayOutputStream os) throws IOException {
+    public void handleError(Throwable cause, ByteArrayInputStream is, ByteArrayOutputStream os) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(os);
         oos.writeObject(new RPCErrorMessage(cause.getClass().getSimpleName(), cause.getMessage(), cause));
         oos.close();
@@ -43,10 +43,8 @@ public class DefaultSerializationHandler implements SerializationHandler {
         Object result = objectInputStream.readObject();
         if (result != null && result.getClass() == RPCErrorMessage.class) {
             RPCErrorMessage error = (RPCErrorMessage) result;
-            if("IllegalStateException".equals(error.className)){
-                throw error.cause;
-            }
-            throw new Exception(error.message, error.cause);
+
+            throw error.cause;
         }
         return result;
     }

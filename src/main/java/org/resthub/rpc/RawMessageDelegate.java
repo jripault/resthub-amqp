@@ -15,21 +15,17 @@
  */
 package org.resthub.rpc;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
-
 import org.resthub.rpc.serializer.SerializationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+
+import java.io.*;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 /**
  * Requests processing
@@ -39,9 +35,9 @@ import org.springframework.amqp.core.MessageProperties;
 public class RawMessageDelegate {
     
     private static final Logger logger = LoggerFactory.getLogger(RawMessageDelegate.class);
-    
+
     private static String SPRING_CORRELATION_ID = "spring_reply_correlation";
-    
+
     private Class<?> serviceAPI;
     private Object serviceImpl;
     private SerializationHandler serializationHandler;
@@ -92,7 +88,6 @@ public class RawMessageDelegate {
         catch (Throwable e)
         {
             logger.error("Exception occurs during method call", e);
-            e.printStackTrace();
             compressed = false;
             response = createFaultBody(message.getBody(), e);
         }
@@ -100,7 +95,7 @@ public class RawMessageDelegate {
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setContentType("x-application/hessian");
         // Spring correlation ID
-        messageProperties.setHeader(SPRING_CORRELATION_ID, 
+        messageProperties.setHeader(SPRING_CORRELATION_ID,
                 message.getMessageProperties().getHeaders().get(SPRING_CORRELATION_ID));
         if (compressed)
         {
@@ -119,7 +114,7 @@ public class RawMessageDelegate {
         {
             in = new InflaterInputStream(new ByteArrayInputStream(request), new Inflater(true));
         }
-        
+
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         OutputStream out;
         if (compressed)
@@ -132,11 +127,9 @@ public class RawMessageDelegate {
             out = bout;
         }
 
+        // let the serializer take care of reading the request and writing the response
         serializationHandler.createResponse(serviceImpl, serviceAPI, in, out);
-        /*
-            HessianSkeleton skeleton = new HessianSkeleton(serviceImpl, serviceAPI);
-            skeleton.invoke(in, out, getSerializerFactory());
-        */
+
         if (out instanceof DeflaterOutputStream)
         {
             ((DeflaterOutputStream) out).finish();
@@ -154,14 +147,9 @@ public class RawMessageDelegate {
             ByteArrayInputStream is = new ByteArrayInputStream(request);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
 
-            serializationHandler.handleError(cause, os);
+            // let the serializer manage errors
+            serializationHandler.handleError(cause, is, os);
 
-            /*
-            AbstractHessianOutput out = createHessianOutput(new HessianInputFactory().readHeader(is), os);
-
-            out.writeFault(cause.getClass().getSimpleName(), cause.getMessage(), cause);
-            out.close();
-            */
             return os.toByteArray();
         }
         catch (IOException e)
@@ -169,30 +157,5 @@ public class RawMessageDelegate {
             throw new RuntimeException(e);
         }
     }
-
-    /*
-    private AbstractHessianOutput createHessianOutput(HessianInputFactory.HeaderType header, OutputStream os)
-    {
-        AbstractHessianOutput out;
-        
-        HessianFactory hessianfactory = new HessianFactory();
-        switch (header)
-        {
-            case CALL_1_REPLY_1:
-                out = hessianfactory.createHessianOutput(os);
-                break;
-
-            case CALL_1_REPLY_2:
-            case HESSIAN_2:
-                out = hessianfactory.createHessian2Output(os);
-                break;
-
-            default:
-                throw new IllegalStateException(header + " is an unknown Hessian call");
-        }
-        
-        return out;
-    }
-    */
 
 }
