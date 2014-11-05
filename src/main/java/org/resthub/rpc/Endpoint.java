@@ -16,7 +16,7 @@
  */
 package org.resthub.rpc;
 
-import org.resthub.rpc.serializer.DefaultSerializationHandler;
+import org.resthub.rpc.serializer.java.DefaultSerializationHandler;
 import org.resthub.rpc.serializer.SerializationHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

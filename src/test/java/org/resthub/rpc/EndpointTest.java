@@ -18,7 +18,7 @@ package org.resthub.rpc;
 
 import static org.testng.AssertJUnit.assertEquals;
 
-import org.resthub.rpc.serializer.DefaultSerializationHandler;
+import org.resthub.rpc.serializer.java.DefaultSerializationHandler;
 import org.resthub.rpc.service.EchoService;
 import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.EchoServiceImpl;

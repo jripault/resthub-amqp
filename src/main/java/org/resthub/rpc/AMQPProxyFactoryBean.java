@@ -17,7 +17,7 @@ package org.resthub.rpc;
 
 import java.lang.reflect.Proxy;
 
-import org.resthub.rpc.serializer.DefaultSerializationHandler;
+import org.resthub.rpc.serializer.java.DefaultSerializationHandler;
 import org.resthub.rpc.serializer.SerializationHandler;
 import org.springframework.beans.factory.FactoryBean;
 

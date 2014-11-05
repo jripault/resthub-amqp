@@ -24,6 +24,10 @@ public class HessianSerializationHandler implements SerializationHandler {
         return _serializerFactory;
     }
 
+    public void setSerializerFactory(SerializerFactory _serializerFactory) {
+        this._serializerFactory = _serializerFactory;
+    }
+
     @Override
     public void createResponse(Object serviceImpl, Class<?> serviceAPI, InputStream in, OutputStream out) throws Throwable {
         HessianSkeleton skeleton = new HessianSkeleton(serviceImpl, serviceAPI);

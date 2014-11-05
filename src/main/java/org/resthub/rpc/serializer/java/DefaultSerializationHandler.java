@@ -1,4 +1,6 @@
-package org.resthub.rpc.serializer;
+package org.resthub.rpc.serializer.java;
+
+import org.resthub.rpc.serializer.SerializationHandler;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -10,10 +12,17 @@ import java.lang.reflect.Method;
  * Date: 20/10/2014
  */
 public class DefaultSerializationHandler implements SerializationHandler {
+
+    private ObjectOutputStreamFactory objectOutputStreamFactory;
+
+    public void setObjectOutputStreamFactory(ObjectOutputStreamFactory objectOutputStreamFactory) {
+        this.objectOutputStreamFactory = objectOutputStreamFactory;
+    }
+
     @Override
     public void createResponse(Object serviceImpl, Class<?> serviceAPI, InputStream in, OutputStream out) throws Throwable {
         ObjectInputStream ois = new ObjectInputStream(in);
-        ObjectOutputStream oos = new ObjectOutputStream(out);
+        ObjectOutputStream oos = this.objectOutputStreamFactory.getObjectOutputStream(out);
         RPCCallMessage message = (RPCCallMessage) ois.readObject();
         Method method = serviceImpl.getClass().getMethod( message.methodName, message.argumentsClasses);
         try {

@@ -1,4 +1,4 @@
-package org.resthub.rpc.serializer;
+package org.resthub.rpc.serializer.java;
 
 import java.io.Serializable;
 
