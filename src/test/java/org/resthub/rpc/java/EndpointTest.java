@@ -14,15 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.resthub.rpc;
+package org.resthub.rpc.java;
 
-import static org.testng.AssertJUnit.assertEquals;
-
+import org.resthub.rpc.AMQPProxyFactory;
+import org.resthub.rpc.Endpoint;
+import org.resthub.rpc.serializer.java.DefaultObjectOutputStreamFactory;
 import org.resthub.rpc.serializer.java.DefaultSerializationHandler;
 import org.resthub.rpc.service.EchoService;
 import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.EchoServiceImpl;
 import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.assertEquals;
 
 
 public class EndpointTest extends AMQPProxyTest
@@ -41,17 +44,21 @@ public class EndpointTest extends AMQPProxyTest
         endpoint.setServiceImpl(new EchoServiceEndpoint());
         endpoint.setQueuePrefix("foo");
         endpoint.setConnectionFactory(connectionFactory);
-        endpoint.setSerializationHandler(new DefaultSerializationHandler());
+        DefaultSerializationHandler serializationHandler = new DefaultSerializationHandler();
+        serializationHandler.setObjectOutputStreamFactory(new DefaultObjectOutputStreamFactory());
+        endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
     }
     
-    @Test
+    @Test(groups = "java-serialization")
     public void testQueuePrefix() throws Exception
     {
         startEndpointWithPrefix();
         
         AMQPProxyFactory factory = new AMQPProxyFactory();
-        factory.setSerializationHandler(new DefaultSerializationHandler());
+        DefaultSerializationHandler serializationHandler = new DefaultSerializationHandler();
+        serializationHandler.setObjectOutputStreamFactory(new DefaultObjectOutputStreamFactory());
+        factory.setSerializationHandler(serializationHandler);
         factory.setReadTimeout(5000);
         factory.setQueuePrefix("foo");
         factory.setConnectionFactory(connectionFactory);

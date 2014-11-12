@@ -13,9 +13,9 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@ContextConfiguration(locations = {"classpath:applicationContext-jpa.xml", "classpath:applicationContext-client.xml"})
+@ContextConfiguration(locations = {"classpath:applicationContext-hessian-jpa.xml", "classpath:applicationContext-hessian-client.xml"})
 @ActiveProfiles({ "resthub-jpa", "resthub-pool-bonecp" })
-public class HibernateLazyTest extends AbstractTransactionalTest {
+public class HessianHibernateLazyTest extends AbstractTransactionalTest {
 
 	@Inject
     @Named("personService")
@@ -24,14 +24,14 @@ public class HibernateLazyTest extends AbstractTransactionalTest {
 	@Resource(name="personServiceProxy")
 	private PersonService proxy;
 	
-	@Test(groups = "java-serialization")
+	@Test(groups = "hessian-serialization")
 	public void test(){
 		Person p = this.personService.create(new Person());
 		
 		Assertions.assertThat(p.getId()).isNotNull();
 	}
 	
-	@Test(groups = "java-serialization")
+	@Test(groups = "hessian-serialization")
 	public void testGetlazyObject(){
 		Person p = new Person();
 		

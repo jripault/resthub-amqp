@@ -1,0 +1,66 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/rabbit
+                           http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+                           http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Connexion RabbitMQ -->
+    <rabbit:connection-factory id="connectionFactory"
+        host="localhost" port="5672" username="guest" password="guest"/>
+
+    <bean id="hibernateSerializerFactory" class="org.resthub.rpc.serializer.hessian.HibernateSerializerFactory" />
+
+    <bean id="serializationHandler" class="org.resthub.rpc.serializer.hessian.HessianSerializationHandler">
+        <property name="serializerFactory" ref="hibernateSerializerFactory"/>
+    </bean>
+        
+    <bean id="echoService" class="org.resthub.rpc.AMQPProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+        <property name="serializationHandler" ref="serializationHandler" />
+    </bean>
+    
+    <bean id="echoServiceTest" class="org.resthub.rpc.AMQPProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+        <property name="serializationHandler" ref="serializationHandler" />
+        <property name="readTimeout" value="5000"/>
+    </bean>
+    
+    <bean id="echoServiceExceptionTest" class="org.resthub.rpc.AMQPProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+        <property name="serializationHandler" ref="serializationHandler" />
+        <property name="readTimeout" value="5000"/>
+        <property name="compressed" value="true"/>
+    </bean>
+    
+    <bean id="echoServicePrefix" class="org.resthub.rpc.AMQPProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.EchoService"/>
+        <property name="serializationHandler" ref="serializationHandler" />
+        <property name="queuePrefix" value="foo"/>
+    </bean>
+    
+    <bean id="testTimeout" class="org.resthub.rpc.AMQPProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.FailingService"/>
+        <property name="serializationHandler" ref="serializationHandler" />
+        <property name="readTimeout" value="3000"/>
+    </bean>
+
+    <bean id="serializationError" class="org.resthub.rpc.AMQPProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.service.FailingService"/>
+        <property name="serializationHandler" ref="serializationHandler" />
+        <property name="readTimeout" value="5000"/>
+    </bean>
+    
+    <bean id="personServiceProxy" class="org.resthub.rpc.AMQPProxyFactoryBean">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="serviceInterface" value="org.resthub.rpc.jpa.service.PersonService"/>
+        <property name="serializationHandler" ref="serializationHandler" />
+    </bean>
+</beans>

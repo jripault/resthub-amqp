@@ -14,10 +14,10 @@
 		entity-manager-factory-ref="entityManagerFactory"
 		transaction-manager-ref="transactionManager" />
 		
-	<bean id="hibernateSerializerFactory" class="org.resthub.rpc.serializer.java.hibernate.HibernateObjectOutputStreamFactory" />
+	<bean id="hibernateSerializerFactory" class="org.resthub.rpc.serializer.hessian.HibernateSerializerFactory" />
 
-	<bean id="serializationHandler" class="org.resthub.rpc.serializer.java.DefaultSerializationHandler">
-		<property name="objectOutputStreamFactory" ref="hibernateSerializerFactory"/>
+	<bean id="serializationHandler" class="org.resthub.rpc.serializer.hessian.HessianSerializationHandler">
+		<property name="serializerFactory" ref="hibernateSerializerFactory"/>
 	</bean>
 		
 	<bean id="personServiceEndpoint" 

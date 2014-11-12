@@ -14,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.resthub.rpc;
-
-import static org.testng.AssertJUnit.assertEquals;
-
-import javax.annotation.Resource;
+package org.resthub.rpc.java;
 
 import org.resthub.rpc.service.EchoService;
 import org.testng.annotations.Test;
+
+import javax.annotation.Resource;
+
+import static org.testng.AssertJUnit.assertEquals;
 
 
 public class SpringEndpointTest extends SpringAMQPProxyTest
@@ -29,7 +29,7 @@ public class SpringEndpointTest extends SpringAMQPProxyTest
     @Resource(name="echoServiceTest")
     protected EchoService echoServicePrefix;
     
-    @Test
+    @Test(groups = "java-serialization")
     public void testQueuePrefix() throws Exception
     {
         String message = "Hello Hessian!";

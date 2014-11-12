@@ -193,12 +193,11 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.1.12.Final</version>
-			<scope>provided</scope>
+			<version>4.3.6.Final</version>
 		</dependency>
 
 		<dependency>
@@ -221,20 +220,28 @@
 			<version>6.5.2</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.resthub</groupId>
 			<artifactId>resthub-jpa</artifactId>
 			<version>${resthub.spring.stack.version}</version>
-			<scope>test</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-beans</artifactId>
+					<groupId>com.jolbox</groupId>
+					<artifactId>bonecp-spring</artifactId>
 				</exclusion>
+			</exclusions>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.jolbox</groupId>
+			<artifactId>bonecp-spring</artifactId>
+			<version>0.8.0.RELEASE</version>
+			<exclusions>
 				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring-core</artifactId>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

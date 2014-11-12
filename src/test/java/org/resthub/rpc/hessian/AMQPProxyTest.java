@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.resthub.rpc;
+package org.resthub.rpc.hessian;
 
-import org.resthub.rpc.serializer.java.DefaultSerializationHandler;
+import org.resthub.rpc.AMQPProxyFactory;
+import org.resthub.rpc.serializer.hessian.HessianSerializationHandler;
 import org.resthub.rpc.service.EchoService;
 import org.resthub.rpc.service.EchoServiceEndpoint;
 import org.resthub.rpc.service.FailingService;
@@ -38,23 +39,24 @@ public class AMQPProxyTest
 
     protected CachingConnectionFactory connectionFactory;
 
-    private DefaultSerializationHandler serializationHandler = new DefaultSerializationHandler();
+    private HessianSerializationHandler serializationHandler = new HessianSerializationHandler();
 
-    @BeforeClass
+    @BeforeClass(groups = "hessian-serialization")
     protected void setUp() throws Exception
     {
         connectionFactory = new CachingConnectionFactory("localhost", 5672);
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");
+
     }
 
-    @AfterClass
+    @AfterClass(groups = "hessian-serialization")
     protected void tearDown() throws Exception
     {
         connectionFactory.destroy();
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testEcho() throws Exception
     {
 
@@ -77,7 +79,7 @@ public class AMQPProxyTest
         endpoint.destroy();
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testException() throws Exception
     {
         EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
@@ -89,7 +91,7 @@ public class AMQPProxyTest
         factory.setReadTimeout(5000);
         factory.setCompressed(true);
         factory.setConnectionFactory(connectionFactory);
-        factory.setSerializationHandler(new DefaultSerializationHandler());
+        factory.setSerializationHandler(new HessianSerializationHandler());
         EchoService service = factory.create(EchoService.class);
         String message = "Hello Hessian!";
 
@@ -111,7 +113,7 @@ public class AMQPProxyTest
         }
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testTimeout() throws Exception
     {
         FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
@@ -122,7 +124,7 @@ public class AMQPProxyTest
         AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(3000);
         factory.setConnectionFactory(connectionFactory);
-        factory.setSerializationHandler(new DefaultSerializationHandler());
+        factory.setSerializationHandler(new HessianSerializationHandler());
         FailingService service = factory.create(FailingService.class);
         
         try
@@ -141,7 +143,7 @@ public class AMQPProxyTest
         }
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testSerializationError() throws Exception
     {
         FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
@@ -152,7 +154,7 @@ public class AMQPProxyTest
         AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(5000);
         factory.setConnectionFactory(connectionFactory);
-        factory.setSerializationHandler(new DefaultSerializationHandler());
+        factory.setSerializationHandler(new HessianSerializationHandler());
         FailingService service = factory.create(FailingService.class);
         
         try
@@ -169,7 +171,7 @@ public class AMQPProxyTest
         }
     }
     
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testDoNothing() throws Exception
     {
         EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
@@ -180,7 +182,7 @@ public class AMQPProxyTest
         AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(5000);
         factory.setConnectionFactory(connectionFactory);
-        factory.setSerializationHandler(new DefaultSerializationHandler());
+        factory.setSerializationHandler(new HessianSerializationHandler());
         EchoService service = factory.create(EchoService.class);
         
         try
@@ -196,7 +198,7 @@ public class AMQPProxyTest
         }
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testError() throws Exception
     {
         FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
@@ -207,7 +209,7 @@ public class AMQPProxyTest
         AMQPProxyFactory factory = new AMQPProxyFactory();
         factory.setReadTimeout(3000);
         factory.setConnectionFactory(connectionFactory);
-        factory.setSerializationHandler(new DefaultSerializationHandler());
+        factory.setSerializationHandler(new HessianSerializationHandler());
         FailingService service = factory.create(FailingService.class);
 
         try

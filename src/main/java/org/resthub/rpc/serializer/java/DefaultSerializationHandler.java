@@ -19,10 +19,17 @@ public class DefaultSerializationHandler implements SerializationHandler {
         this.objectOutputStreamFactory = objectOutputStreamFactory;
     }
 
+    public ObjectOutputStreamFactory getObjectOutputStreamFactory() {
+        if(objectOutputStreamFactory == null){
+            objectOutputStreamFactory = new DefaultObjectOutputStreamFactory();
+        }
+        return objectOutputStreamFactory;
+    }
+
     @Override
     public void createResponse(Object serviceImpl, Class<?> serviceAPI, InputStream in, OutputStream out) throws Throwable {
         ObjectInputStream ois = new ObjectInputStream(in);
-        ObjectOutputStream oos = this.objectOutputStreamFactory.getObjectOutputStream(out);
+        ObjectOutputStream oos = this.getObjectOutputStreamFactory().getObjectOutputStream(out);
         RPCCallMessage message = (RPCCallMessage) ois.readObject();
         Method method = serviceImpl.getClass().getMethod( message.methodName, message.argumentsClasses);
         try {

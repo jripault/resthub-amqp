@@ -14,16 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.resthub.rpc;
-
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
-import static org.testng.AssertJUnit.fail;
-
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.concurrent.TimeoutException;
-
-import javax.annotation.Resource;
+package org.resthub.rpc.hessian;
 
 import org.resthub.rpc.service.EchoService;
 import org.resthub.rpc.service.FailingService;
@@ -31,7 +22,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.Test;
 
-@ContextConfiguration(locations = {"classpath:applicationContext-server.xml", "classpath:applicationContext-client.xml"})
+import javax.annotation.Resource;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.concurrent.TimeoutException;
+
+import static org.testng.AssertJUnit.*;
+
+@ContextConfiguration(locations = {"classpath:applicationContext-hessian-server.xml", "classpath:applicationContext-hessian-client.xml"})
 public class SpringAMQPProxyTest extends AbstractTestNGSpringContextTests
 {
     protected final String HOSTNAME = "localhost";
@@ -48,7 +45,7 @@ public class SpringAMQPProxyTest extends AbstractTestNGSpringContextTests
     @Resource(name="serializationError")
     protected FailingService serializationError;
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testEcho() throws Exception
     {
         String message = "Hello Hessian!";
@@ -57,7 +54,7 @@ public class SpringAMQPProxyTest extends AbstractTestNGSpringContextTests
         assertEquals(message, echoServiceTest.echo(message));
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testException() throws Exception
     {
        
@@ -78,7 +75,7 @@ public class SpringAMQPProxyTest extends AbstractTestNGSpringContextTests
         }
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testTimeout() throws Exception
     {
         try
@@ -94,7 +91,7 @@ public class SpringAMQPProxyTest extends AbstractTestNGSpringContextTests
         }
     }
 
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testSerializationError() throws Exception
     {
         try
@@ -108,7 +105,7 @@ public class SpringAMQPProxyTest extends AbstractTestNGSpringContextTests
         }
     }
     
-    @Test
+    @Test(groups = "hessian-serialization")
     public void testDoNothing() throws Exception
     {
         try
