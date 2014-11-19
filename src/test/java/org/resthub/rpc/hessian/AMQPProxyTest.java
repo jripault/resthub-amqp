@@ -19,9 +19,9 @@ package org.resthub.rpc.hessian;
 import org.resthub.rpc.AMQPProxyFactory;
 import org.resthub.rpc.serializer.hessian.HessianSerializationHandler;
 import org.resthub.rpc.service.EchoService;
-import org.resthub.rpc.service.EchoServiceEndpoint;
+import org.resthub.rpc.service.EchoServiceRPCEndpoint;
 import org.resthub.rpc.service.FailingService;
-import org.resthub.rpc.service.FailingServiceEndpoint;
+import org.resthub.rpc.service.FailingServiceRPCEndpoint;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -61,7 +61,7 @@ public class AMQPProxyTest
     {
 
 
-        EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
+        EchoServiceRPCEndpoint endpoint = new EchoServiceRPCEndpoint();
         endpoint.setSerializationHandler(serializationHandler);
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.run();
@@ -82,7 +82,7 @@ public class AMQPProxyTest
     @Test(groups = "hessian-serialization")
     public void testException() throws Exception
     {
-        EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
+        EchoServiceRPCEndpoint endpoint = new EchoServiceRPCEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
@@ -116,7 +116,7 @@ public class AMQPProxyTest
     @Test(groups = "hessian-serialization")
     public void testTimeout() throws Exception
     {
-        FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
+        FailingServiceRPCEndpoint endpoint = new FailingServiceRPCEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
@@ -146,7 +146,7 @@ public class AMQPProxyTest
     @Test(groups = "hessian-serialization")
     public void testSerializationError() throws Exception
     {
-        FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
+        FailingServiceRPCEndpoint endpoint = new FailingServiceRPCEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
@@ -174,7 +174,7 @@ public class AMQPProxyTest
     @Test(groups = "hessian-serialization")
     public void testDoNothing() throws Exception
     {
-        EchoServiceEndpoint endpoint = new EchoServiceEndpoint();
+        EchoServiceRPCEndpoint endpoint = new EchoServiceRPCEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();
@@ -201,7 +201,7 @@ public class AMQPProxyTest
     @Test(groups = "hessian-serialization")
     public void testError() throws Exception
     {
-        FailingServiceEndpoint endpoint = new FailingServiceEndpoint();
+        FailingServiceRPCEndpoint endpoint = new FailingServiceRPCEndpoint();
         endpoint.setConnectionFactory(connectionFactory);
         endpoint.setSerializationHandler(serializationHandler);
         endpoint.run();

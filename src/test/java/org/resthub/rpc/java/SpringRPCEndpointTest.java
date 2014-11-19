@@ -24,7 +24,7 @@ import javax.annotation.Resource;
 import static org.testng.AssertJUnit.assertEquals;
 
 
-public class SpringEndpointTest extends SpringAMQPProxyTest
+public class SpringRPCEndpointTest extends SpringAMQPProxyTest
 {
     @Resource(name="echoServiceTest")
     protected EchoService echoServicePrefix;

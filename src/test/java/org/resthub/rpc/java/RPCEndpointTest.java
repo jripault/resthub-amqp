@@ -17,37 +17,37 @@
 package org.resthub.rpc.java;
 
 import org.resthub.rpc.AMQPProxyFactory;
-import org.resthub.rpc.Endpoint;
+import org.resthub.rpc.RPCEndpoint;
 import org.resthub.rpc.serializer.java.DefaultObjectOutputStreamFactory;
 import org.resthub.rpc.serializer.java.DefaultSerializationHandler;
 import org.resthub.rpc.service.EchoService;
-import org.resthub.rpc.service.EchoServiceEndpoint;
+import org.resthub.rpc.service.EchoServiceRPCEndpoint;
 import org.resthub.rpc.service.EchoServiceImpl;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.assertEquals;
 
 
-public class EndpointTest extends AMQPProxyTest
+public class RPCEndpointTest extends AMQPProxyTest
 {
     protected void startEndpoint()
     {
-        Endpoint endpoint = new Endpoint(new EchoServiceImpl());
-        endpoint.setConnectionFactory(connectionFactory);
-        endpoint.run();
+        RPCEndpoint RPCEndpoint = new RPCEndpoint(new EchoServiceImpl());
+        RPCEndpoint.setConnectionFactory(connectionFactory);
+        RPCEndpoint.run();
     }
 
     private void startEndpointWithPrefix()
     {
-        Endpoint endpoint = new Endpoint();
-        endpoint.setServiceAPI(EchoService.class);
-        endpoint.setServiceImpl(new EchoServiceEndpoint());
-        endpoint.setQueuePrefix("foo");
-        endpoint.setConnectionFactory(connectionFactory);
+        RPCEndpoint RPCEndpoint = new RPCEndpoint();
+        RPCEndpoint.setServiceAPI(EchoService.class);
+        RPCEndpoint.setServiceImpl(new EchoServiceRPCEndpoint());
+        RPCEndpoint.setQueuePrefix("foo");
+        RPCEndpoint.setConnectionFactory(connectionFactory);
         DefaultSerializationHandler serializationHandler = new DefaultSerializationHandler();
         serializationHandler.setObjectOutputStreamFactory(new DefaultObjectOutputStreamFactory());
-        endpoint.setSerializationHandler(serializationHandler);
-        endpoint.run();
+        RPCEndpoint.setSerializationHandler(serializationHandler);
+        RPCEndpoint.run();
     }
     
     @Test(groups = "java-serialization")

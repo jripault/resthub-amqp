@@ -37,9 +37,9 @@ import org.springframework.beans.factory.InitializingBean;
  * Endpoint for serving Hessian services.
  *
  */
-public class Endpoint implements InitializingBean, DisposableBean
+public class RPCEndpoint implements InitializingBean, DisposableBean
 {
-    private static final Logger logger = LoggerFactory.getLogger(Endpoint.class);
+    private static final Logger logger = LoggerFactory.getLogger(RPCEndpoint.class);
     
     private Class<?> serviceAPI;
     private Object serviceImpl;
@@ -57,7 +57,7 @@ public class Endpoint implements InitializingBean, DisposableBean
     /**
      * Creates an hessian endpoint.
      */
-    public Endpoint()
+    public RPCEndpoint()
     {
         // Initialize the service
         setServiceAPI(findRemoteAPI(getClass()));
@@ -69,7 +69,7 @@ public class Endpoint implements InitializingBean, DisposableBean
      * 
      * @param serviceImpl The remote object to be exposed by the endpoint
      */
-    public Endpoint(Object serviceImpl)
+    public RPCEndpoint(Object serviceImpl)
     {
         // Initialize the service
         setServiceAPI(findRemoteAPI(serviceImpl.getClass()));

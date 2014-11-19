@@ -22,21 +22,21 @@
     </bean>
 	
 	<bean id="echoEndpoint" 
-	   class="org.resthub.rpc.Endpoint">
+	   class="org.resthub.rpc.RPCEndpoint">
 	   <constructor-arg index="0" ref="echoServiceImpl"/>
 	   <property name="connectionFactory" ref="connectionFactory" />
         <property name="serializationHandler" ref="serializationHandler" />
 	</bean>
 	
 	<bean id="failingEndpoint" 
-       class="org.resthub.rpc.Endpoint">
+       class="org.resthub.rpc.RPCEndpoint">
        <constructor-arg index="0" ref="failingServiceImpl"/>
        <property name="connectionFactory" ref="connectionFactory" />
         <property name="serializationHandler" ref="serializationHandler" />
     </bean>
     
     <bean id="echoEndpointPrefix" 
-       class="org.resthub.rpc.Endpoint">
+       class="org.resthub.rpc.RPCEndpoint">
        <constructor-arg index="0" ref="echoServiceImpl"/>
        <property name="connectionFactory" ref="connectionFactory" />
        <property name="queuePrefix" value="foo"/>

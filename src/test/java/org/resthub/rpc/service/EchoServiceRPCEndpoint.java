@@ -14,27 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.resthub.rpc.hessian;
 
-import org.resthub.rpc.service.EchoService;
-import org.testng.annotations.Test;
+package org.resthub.rpc.service;
 
-import javax.annotation.Resource;
-
-import static org.testng.AssertJUnit.assertEquals;
+import org.resthub.rpc.RPCEndpoint;
 
 
-public class SpringEndpointTest extends SpringAMQPProxyTest
+/**
+ * Echo service implementation as a subclass of Endpoint.
+ * 
+ * @author Emmanuel Bourg
+ */
+public class EchoServiceRPCEndpoint extends RPCEndpoint implements EchoService
 {
-    @Resource(name="echoServiceTest")
-    protected EchoService echoServicePrefix;
-    
-    @Test(groups = "hessian-serialization")
-    public void testQueuePrefix() throws Exception
+    public String echo(String message)
     {
-        String message = "Hello Hessian!";
-        
-        assertEquals(message, echoServicePrefix.echo(message));
+        return message;
     }
 
+    public void exception(String message) throws Exception
+    {
+        throw new Exception(message);
+    }
+    
+    public void doNothing(){
+        
+    }
 }

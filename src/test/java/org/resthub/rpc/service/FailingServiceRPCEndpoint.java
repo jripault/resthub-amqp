@@ -1,6 +1,5 @@
 /**
- * Copyright 2010 Emmanuel Bourg
- * Copyright 2012 resthub.org
+ * Copyright 2012 Emmanuel Bourg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +16,35 @@
 
 package org.resthub.rpc.service;
 
-import org.resthub.rpc.Endpoint;
+import org.resthub.rpc.RPCEndpoint;
+
 
 
 /**
- * Echo service implementation as a subclass of Endpoint.
- * 
  * @author Emmanuel Bourg
+ * @version $Revision$, $Date$
  */
-public class EchoServiceEndpoint extends Endpoint implements EchoService
+public class FailingServiceRPCEndpoint extends RPCEndpoint implements FailingService
 {
-    public String echo(String message)
+    public void timeout(long time)
     {
-        return message;
+        try
+        {
+            Thread.sleep(time);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void exception(String message) throws Exception
+    public Object getNotSerializable()
     {
-        throw new Exception(message);
+        return this;
     }
-    
-    public void doNothing(){
-        
+
+    public void error()
+    {
+        throw new StackOverflowError();
     }
 }

@@ -95,7 +95,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>
@@ -126,7 +126,7 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

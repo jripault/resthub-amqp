@@ -17,34 +17,34 @@
 package org.resthub.rpc.hessian;
 
 import org.resthub.rpc.AMQPProxyFactory;
-import org.resthub.rpc.Endpoint;
+import org.resthub.rpc.RPCEndpoint;
 import org.resthub.rpc.serializer.hessian.HessianSerializationHandler;
 import org.resthub.rpc.service.EchoService;
-import org.resthub.rpc.service.EchoServiceEndpoint;
+import org.resthub.rpc.service.EchoServiceRPCEndpoint;
 import org.resthub.rpc.service.EchoServiceImpl;
 import org.testng.annotations.Test;
 
 import static org.testng.AssertJUnit.assertEquals;
 
 
-public class EndpointTest extends AMQPProxyTest
+public class RPCEndpointTest extends AMQPProxyTest
 {
     protected void startEndpoint()
     {
-        Endpoint endpoint = new Endpoint(new EchoServiceImpl());
-        endpoint.setConnectionFactory(connectionFactory);
-        endpoint.run();
+        RPCEndpoint RPCEndpoint = new RPCEndpoint(new EchoServiceImpl());
+        RPCEndpoint.setConnectionFactory(connectionFactory);
+        RPCEndpoint.run();
     }
 
     private void startEndpointWithPrefix()
     {
-        Endpoint endpoint = new Endpoint();
-        endpoint.setServiceAPI(EchoService.class);
-        endpoint.setServiceImpl(new EchoServiceEndpoint());
-        endpoint.setQueuePrefix("foo");
-        endpoint.setConnectionFactory(connectionFactory);
-        endpoint.setSerializationHandler(new HessianSerializationHandler());
-        endpoint.run();
+        RPCEndpoint RPCEndpoint = new RPCEndpoint();
+        RPCEndpoint.setServiceAPI(EchoService.class);
+        RPCEndpoint.setServiceImpl(new EchoServiceRPCEndpoint());
+        RPCEndpoint.setQueuePrefix("foo");
+        RPCEndpoint.setConnectionFactory(connectionFactory);
+        RPCEndpoint.setSerializationHandler(new HessianSerializationHandler());
+        RPCEndpoint.run();
     }
     
     @Test(groups = "hessian-serialization")

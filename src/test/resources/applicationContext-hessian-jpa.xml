@@ -21,7 +21,7 @@
 	</bean>
 		
 	<bean id="personServiceEndpoint" 
-	   		class="org.resthub.rpc.Endpoint">
+	   		class="org.resthub.rpc.RPCEndpoint">
 	   <constructor-arg index="0" ref="personService"/>
 	   <property name="connectionFactory" ref="connectionFactory" />
 	   <property name="serializationHandler" ref="serializationHandler" />
